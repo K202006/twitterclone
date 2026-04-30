@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        
+        <% if(currentUser) { %>
+        <!-- Create Tweet Form -->
+        <div class="card mb-4 shadow-sm border-0 bg-light">
+            <div class="card-body">
+                <form action="/tweets" method="POST">
+                    <div class="mb-3">
+                        <textarea class="form-control bg-white" name="tweetContent" rows="3" placeholder="What's happening?" required></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Tweet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <% } else { %>
+            <div class="alert alert-info text-center shadow-sm">
+                Please <a href="/login">login</a> or <a href="/register">register</a> to start tweeting!
+            </div>
+        <% } %>
+
+        <!-- Tweets List -->
+        <h4 class="mb-3 fw-bold">Recent Tweets</h4>
+        
+        <% if(tweets.length === 0) { %>
+            <div class="alert alert-secondary text-center">No tweets yet. Be the first to tweet!</div>
+        <% } else { %>
+            <% tweets.forEach(function(tweet) { %>
+                <div class="card mb-3 shadow-sm tweet-card border-0">
+                    <div class="card-body">
+                        <h6 class="card-title text-primary fw-bold mb-1">@<%= tweet.username %></h6>
+                        <small class="text-muted d-block mb-3"><%= new Date(tweet.createdAt).toLocaleString() %></small>
+                        <p class="card-text fs-5"><%= tweet.tweetContent %></p>
+                        
+                        <div class="d-flex justify-content-end align-items-center mt-3">
+                            <% if(currentUser && tweet.username === currentUser.username) { %>
+                                <div>
+                                    <a href="/tweets/<%= tweet._id %>/edit" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
+                                    <form action="/tweets/<%= tweet._id %>/delete?_method=DELETE" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>
